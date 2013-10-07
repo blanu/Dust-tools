@@ -1,0 +1,6 @@
+cd Dust-tools
+cabal install --only-dependencies
+cabal configure
+cabal build
+cabal install
+
