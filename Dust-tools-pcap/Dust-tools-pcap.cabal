@@ -8,8 +8,8 @@ Maintainer:          brandon@ischool.utexas.edu
 Build-Type:          Simple
 Cabal-Version:       >=1.8
 
-Executable shaper-server
-  Main-is: Dust/Services/Shaper/ShaperServer.hs
+Executable replay-convert
+  Main-is: Dust/Services/Replay/convert.hs
   Build-Depends:
     base >= 3 && < 5,
     Dust,
@@ -27,8 +27,8 @@ Executable shaper-server
     directory,
     split
 
-Executable shaper-client
-  Main-is: Dust/Services/Shaper/ShaperClient.hs
+Executable update
+  Main-is:           Dust/Model/update.hs
   Build-Depends:
     base >= 3 && < 5,
     Dust,
@@ -46,8 +46,8 @@ Executable shaper-client
     directory,
     split
 
-Executable replay-server
-  Main-is: Dust/Services/Replay/ReplayServer.hs
+Executable export
+  Main-is:           Dust/Model/export.hs
   Build-Depends:
     base >= 3 && < 5,
     Dust,
@@ -65,8 +65,8 @@ Executable replay-server
     directory,
     split
 
-Executable replay-client
-  Main-is: Dust/Services/Replay/ReplayClient.hs
+Executable show
+  Main-is:           Dust/Model/show.hs
   Build-Depends:
     base >= 3 && < 5,
     Dust,
@@ -83,23 +83,3 @@ Executable replay-client
     containers,
     directory,
     split
-
-Executable compile
-  Main-is:           Dust/Model/compile.hs
-  Build-Depends:
-    base >= 3 && < 5,
-    Dust,
-    bytestring,
-    entropy,
-    network,
-    cereal,
-    ghc-prim,
-    binary,
-    random,
-    random-extras,
-    random-source,
-    random-fu,
-    containers,
-    directory,
-    split,
-    csv

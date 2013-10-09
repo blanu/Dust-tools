@@ -1,0 +1,2 @@
+A set of tools for exploring network filtering which require the pcap module
+Currently the pcap module only works on Linux

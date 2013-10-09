@@ -1,0 +1,6 @@
+cd Dust-tools/Dust-tools-pcap
+cabal install --only-dependencies
+cabal configure
+cabal build
+cabal install
+
