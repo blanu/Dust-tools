@@ -1,12 +1,18 @@
 Name:                Dust-tools
 Version:             1.1
 Description:         A set of tools for exploring network filtering
+Synopsis:            Network filtering exploration tools
+Category:            Network
 License:             GPL
 License-file:        LICENSE
 Author:              Brandon Wiley
 Maintainer:          brandon@ischool.utexas.edu
 Build-Type:          Simple
 Cabal-Version:       >=1.8
+
+source-repository head
+  type: git
+  location: git@github.com:blanu/Dust-tools.git
 
 Executable shaper-server
   Main-is: Dust/Services/Shaper/ShaperServer.hs
