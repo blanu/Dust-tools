@@ -1,5 +1,5 @@
 Name:                Dust-tools
-Version:             1.0
+Version:             1.1
 Description:         A set of tools for exploring network filtering
 License:             GPL
 License-file:        LICENSE
@@ -12,7 +12,7 @@ Executable shaper-server
   Main-is: Dust/Services/Shaper/ShaperServer.hs
   Build-Depends:
     base >= 3 && < 5,
-    Dust,
+    Dust >= 2.1,
     bytestring,
     entropy,
     network,
