@@ -1,5 +1,5 @@
 Name:                Dust-tools
-Version:             1.0
+Version:             1.2.1
 Description:         A set of tools for exploring network filtering
 Synopsis:            Network filtering exploration tools
 Category:            Network
@@ -18,7 +18,7 @@ Executable shaper-server
   Main-is: Dust/Services/Shaper/ShaperServer.hs
   Build-Depends:
     base >= 3 && < 5,
-    Dust,
+    Dust >= 2.2.1,
     bytestring,
     entropy,
     network,
@@ -37,7 +37,7 @@ Executable shaper-client
   Main-is: Dust/Services/Shaper/ShaperClient.hs
   Build-Depends:
     base >= 3 && < 5,
-    Dust,
+    Dust >= 2.2.1,
     bytestring,
     entropy,
     network,
@@ -56,7 +56,7 @@ Executable replay-server
   Main-is: Dust/Services/Replay/ReplayServer.hs
   Build-Depends:
     base >= 3 && < 5,
-    Dust,
+    Dust >= 2.2.1,
     bytestring,
     entropy,
     network,
@@ -75,7 +75,7 @@ Executable replay-client
   Main-is: Dust/Services/Replay/ReplayClient.hs
   Build-Depends:
     base >= 3 && < 5,
-    Dust,
+    Dust >= 2.2.1,
     bytestring,
     entropy,
     network,
@@ -94,7 +94,7 @@ Executable compile
   Main-is:           Dust/Model/compile.hs
   Build-Depends:
     base >= 3 && < 5,
-    Dust,
+    Dust >= 2.2.1,
     bytestring,
     entropy,
     network,
