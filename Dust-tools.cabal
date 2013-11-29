@@ -14,6 +14,26 @@ source-repository head
   type: git
   location: git@github.com:blanu/Dust-tools.git
 
+Library
+  Build-Depends:
+    base >= 3 && < 5,
+    Dust >= 2.1,
+    bytestring,
+    entropy,
+    network,
+    cereal,
+    ghc-prim,
+    binary,
+    random,
+    random-extras,
+    random-source,
+    random-fu,
+    containers,
+    directory,
+    split
+  Exposed-modules:
+    Dust.Services.Replay.Replay
+
 Executable shaper-server
   Main-is: Dust/Services/Shaper/ShaperServer.hs
   Build-Depends:

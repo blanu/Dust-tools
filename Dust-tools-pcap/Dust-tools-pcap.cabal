@@ -1,6 +1,8 @@
-Name:                Dust-tools
+Name:                Dust-tools-pcap
 Version:             1.0
 Description:         A set of tools for exploring network filtering
+Synopsis:            Network filtering exploration tools that rely on pcap
+Category:            Network
 License:             GPL
 License-file:        LICENSE
 Author:              Brandon Wiley
@@ -8,11 +10,16 @@ Maintainer:          brandon@ischool.utexas.edu
 Build-Type:          Simple
 Cabal-Version:       >=1.8
 
+source-repository head
+  type: git
+  location: git@github.com:blanu/Dust-tools.git
+
 Executable replay-convert
   Main-is: Dust/Services/Replay/convert.hs
   Build-Depends:
     base >= 3 && < 5,
-    Dust,
+    Dust >= 2.1,
+    Dust-tools >=1.2,
     bytestring,
     entropy,
     network,
@@ -25,7 +32,8 @@ Executable replay-convert
     random-fu,
     containers,
     directory,
-    split
+    split,
+    pcap
 
 Executable update
   Main-is:           Dust/Model/update.hs
@@ -44,7 +52,9 @@ Executable update
     random-fu,
     containers,
     directory,
-    split
+    split,
+    pcap,
+    csv
 
 Executable export
   Main-is:           Dust/Model/export.hs
@@ -63,7 +73,9 @@ Executable export
     random-fu,
     containers,
     directory,
-    split
+    split,
+    pcap,
+    csv
 
 Executable show
   Main-is:           Dust/Model/show.hs
@@ -82,4 +94,6 @@ Executable show
     random-fu,
     containers,
     directory,
-    split
+    split,
+    pcap,
+    csv
