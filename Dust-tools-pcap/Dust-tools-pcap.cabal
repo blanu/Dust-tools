@@ -1,5 +1,5 @@
 Name:                Dust-tools-pcap
-Version:             1.0
+Version:             1.2.2
 Description:         A set of tools for exploring network filtering
 Synopsis:            Network filtering exploration tools that rely on pcap
 Category:            Network
