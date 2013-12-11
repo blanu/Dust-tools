@@ -110,11 +110,11 @@ Executable replay-client
     directory,
     split
 
-Executable compile
-  Main-is:           Dust/Model/compile.hs
+Executable shaper-export
+  Main-is:           Dust/Model/export.hs
   Build-Depends:
     base >= 3 && < 5,
-    Dust >= 2.2.1,
+    Dust,
     bytestring,
     entropy,
     network,
@@ -128,4 +128,26 @@ Executable compile
     containers,
     directory,
     split,
+    pcap,
+    csv
+
+Executable shaper-show
+  Main-is:           Dust/Model/show.hs
+  Build-Depends:
+    base >= 3 && < 5,
+    Dust,
+    bytestring,
+    entropy,
+    network,
+    cereal,
+    ghc-prim,
+    binary,
+    random,
+    random-extras,
+    random-source,
+    random-fu,
+    containers,
+    directory,
+    split,
+    pcap,
     csv

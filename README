@@ -1,1 +1,141 @@
 A set of tools for exploring network filtering
+
+Tools are installed in ~/.cabal/bin/
+To add them to your path, try this:
+
+PATH=$PATH:~/.cabal/bin
+
+There are two basic Dust tools: Replay and Shaper.
+
+# Replay #
+
+Replay takes a recorded conversation and replays it, possibly with variations.
+This is used to detect bytestring matching in the filter.
+By varying the content of the recorded conversation, bytestrings used by the filter can be detected.
+The Replay tool requires a recorded conversation in the form of a Packetstream file.
+Packetstream files are a cross-platform format which you can get by converting .pcap files.
+The .pcap files are direct recordings of traffic. You must supply your own .pcap files. You can record them using Wireshark.
+Converting .pcap fils to the Packetstream format requires the Dust-tools-pcap package, which only works on Linux.
+
+To record traffic to a .pcap file (requires Dust-tools-pcap):
+
+replay-convert [pcap-file] [tcp|udp] [port] [packetstream-file]
+
+Example:
+
+replay-convert http.pcap tcp 80 http.packets
+
+In order to use this file, you run replay-server and replay-client:
+
+replay-server [packetstream-file] <mask-file>
+replay-client [packetstream-file] <mask-file>
+
+Example:
+
+(on server): replay-server http.packets
+(on client): replay-client http.packets
+
+This will replay the HTTP conversation with no variation.
+
+The replay client and server can take an optional mask file which specifies variations.
+
+The mask file is in the following format:
+
+offset,byte offset,byte offset,byte ...
+offset,byte offset,byte offset,byte ...
+...
+
+Each line maps to a packet in the replayed conversation. The first line corresponds to the first packet and so on.
+Each line contains a sequence of offset and byte pairs.
+The offset specifies the index within the packet to modify.
+The byte specifies the value to set for that offset.
+For instance, 0,32 would set the first byte (index 0) of the given packet to the value 20, corresponding to an ASCII space.
+
+Example:
+
+0,0 1,0 2,0
+0,32 7,32 12,32
+
+The above sets the bytes at the 0, 1, and 2 positions of the first packet to 0 (null) and the 0, 7, and 12 positions of the second packet to 32 (space).
+
+The usefulness of the replay tool is in detecting bytestrings used by filters to classify traffic.
+
+For instance, most HTTP traffic looks something like this:
+
+GET /favicon.ico HTTP/1.0
+
+Perhaps the filter is looking for "GET" at the beginning of the first packet to identify HTTP traffic.
+This may seem like an ineffective way to classify traffic but it's actually quite common.
+
+We can test this hypothesis by creating the folling mask file. Let's call it get.mask:
+
+0,0 1,0 2,0
+
+This sets the first three bytes of the first packet to 0 (null).
+
+Then we run the replay like this:
+
+(on server): replay-server http.packets get.mask
+(on client): replay-client http.packets get.mask
+
+This replays the HTTP traffic, but masking those three bytes to 0. If we were to view this replayed traffic it would look like this:
+
+??? /favicon.ico HTTP/1.0
+
+The question marks are because nulls cannot be printed.
+
+If the filter fails to classify this traffic as HTTP then the hypothesis that it is matching "GET" at the beginning of the first packet is confirmed.
+
+# Shaper #
+
+Shaper takes a protocol model and generates random traffic which conforms to that model.
+This is used to determine if the protocol models are accurate with respect to a specific filter.
+If the filter treats actual traffic and Shaper traffic the same, then the model is accurate with respect to that filter.
+For instance, if the filter blocks both actual and Shaper HTTP traffic, and passes through both actual and Shaper HTTPS traffic, then
+the HTTP and HTTPS models capture the characteristics that the filter is using to distinguish HTTP traffic from HTTPS traffic.
+
+The Shaper tool requires a protocol model in the form of an Observation file.
+Observation files are a cross-platform format which you can get by converting .pcap files or using live traffic capture.
+The .pcap files are direct recordings of traffic. You can supply your own .pcap files. You can record them using Wireshark.
+You can also skip .pcap files entirely and just capture live traffic directly to Observation files.
+Both converting .pcap files and recording live traffic require the Dust-tools-pcap package, which only works on Linux.
+
+To record live traffic to an Observation file or convert a .pcap file (requires Dust-tools-pcap):
+
+shaper-update [pcap-file | --live device count] [port] [observation-file]
+
+Example:
+
+shaper-update http.pcap 80 http.obs
+
+or
+
+shaper-update --live eth0 1024 http.obs
+
+You can run shaper-update multiple times on the same Observation file and it will aggregate observed traffic.
+
+In order to use this file, you run shaper-server and shaper-client:
+
+(on server): shaper-server
+(on client): shaper-client
+
+The tools expect the traffic to be in a file called traffic.model.
+
+The client and server will exchange traffic which conforms to the model specified in traffic.model forever until interrupted with Ctrl-C.
+This can use a lot of bandwidth, so they should only be run for a short time and then interrupted.
+
+The accuracy of the models can be determined by looking at how the filter treats the Shaper traffic as compared to the actual traffic from which the models were derived.
+
+# Additional Utilities #
+
+Dust-tools contains additional utilities for working with Observation files.
+
+shaper-show [observation-file] 
+
+Displays the contents of an Observation file.
+This can be useful for debugging models.
+
+shaper-export [observation-file] [csv-file]
+
+Converts the contents of an observation file to a CSV file.
+This can be useful for making graphs of models.
