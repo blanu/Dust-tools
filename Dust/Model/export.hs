@@ -6,7 +6,6 @@ import System.IO.Error
 import Data.Serialize
 import Text.CSV
 import Data.List as L
-import Network.Pcap
 import Data.Word
 import Foreign.Ptr
 import Foreign.ForeignPtr

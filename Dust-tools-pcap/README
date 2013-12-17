@@ -1,2 +1,39 @@
 A set of tools for exploring network filtering which require the pcap module
 Currently the pcap module only works on Linux
+
+# Replay #
+
+The Replay tool requires a recorded conversation in the form of a Packetstream file.
+Packetstream files are a cross-platform format which you can get by converting .pcap files.
+The .pcap files are direct recordings of traffic. You must supply your own .pcap files. You can record them using Wireshark.
+Converting .pcap fils to the Packetstream format requires the Dust-tools-pcap package, which only works on Linux.
+
+To record traffic to a .pcap file (requires Dust-tools-pcap):
+
+replay-convert [pcap-file] [tcp|udp] [port] [packetstream-file]
+
+Example:
+
+replay-convert http.pcap tcp 80 http.packets
+
+# Shaper #
+
+The Shaper tool requires a protocol model in the form of an Observation file.
+Observation files are a cross-platform format which you can get by converting .pcap files or using live traffic capture.
+The .pcap files are direct recordings of traffic. You can supply your own .pcap files. You can record them using Wireshark.
+You can also skip .pcap files entirely and just capture live traffic directly to Observation files.
+Both converting .pcap files and recording live traffic require the Dust-tools-pcap package, which only works on Linux.
+
+To record live traffic to an Observation file or convert a .pcap file (requires Dust-tools-pcap):
+
+shaper-update [pcap-file | --live device count] [port] [observation-file]
+
+Example:
+
+shaper=update http.pcap 80 http.obs
+
+or
+
+shaper-update --live eth0 1024 http.obs
+
+You can run shaper-update multiple times on the same Observation file and it will aggregate observed traffic.

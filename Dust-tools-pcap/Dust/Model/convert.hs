@@ -28,7 +28,7 @@ main = do
         (pcappath:protocol:port:pspath:_) -> convert pcappath protocol port pspath
         otherwise                         -> do
           putStrLn "replay-convert converts .pcap files into the packetstream format for use in replay-server and replay-client"
-          putStrLn "Usage: replay-client [pcap-file] [tcp|udp] [port] [packetstream-file]"
+          putStrLn "Usage: replay-convert [pcap-file] [tcp|udp] [port] [packetstream-file]"
 
 convert :: FilePath -> String -> String -> FilePath -> IO()
 convert pcappath protocol sport pspath = do
