@@ -1,5 +1,5 @@
 Name:                Dust-tools
-Version:             1.2.1
+Version:             1.3
 Description:         A set of tools for exploring network filtering
 Synopsis:            Network filtering exploration tools
 Category:            Network
@@ -17,7 +17,8 @@ source-repository head
 Library
   Build-Depends:
     base >= 3 && < 5,
-    Dust >= 2.1,
+    Dust-crypto,
+    Dust >= 2.3,
     bytestring,
     entropy,
     network,
