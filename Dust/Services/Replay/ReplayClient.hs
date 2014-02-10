@@ -58,6 +58,7 @@ client protocol host port handleRequest = withSocketsDo $ do
       ProtocolTCP -> do
         sock <- socket AF_INET NS.Stream defaultProtocol
         addr <- inet_addr host
+        putStrLn $ "Connecting to " ++ (show addr) ++ (show port)
         connect sock (SockAddrInet port addr)
         setSocketOption sock NoDelay 1
 
