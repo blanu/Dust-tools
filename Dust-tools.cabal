@@ -190,3 +190,13 @@ Executable shaper-show
     directory,
     split,
     csv
+
+Executable shaper-import
+  Main-is:           Dust/Model/import.hs
+  Build-Depends:
+    base >= 3 && < 5,
+    Dust,
+    bytestring,
+    ghc-prim,
+    directory,
+    aeson

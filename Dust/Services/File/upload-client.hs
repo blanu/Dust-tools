@@ -11,8 +11,9 @@ import System.Entropy
 import Control.Exception
 import Data.Word (Word16)
 import System.Environment (getArgs)
-import Dust.Services.File.Progress
+--import Dust.Services.File.Progress
 import System.IO
+import qualified Data.Serialize as DS
 
 import Dust.Network.Util
 import Dust.Model.TrafficModel
@@ -24,7 +25,7 @@ import Dust.Crypto.ECDSA
 import Dust.Crypto.ECDH
 import Dust.Core.CryptoProtocol (Session(..), makeSession)
 import Dust.Core.WireProtocol
-import Dust.Crypto.DustCipher
+import Dust.Crypto.Cipher
 import Dust.Core.DustPacket
 import Dust.Core.WireProtocolHandler
 import Dust.Network.ProtocolSocket
@@ -60,9 +61,8 @@ upload host path = do
     let port = 9521
 
     file <- readEncodedFile path
-    let payload = makeEncodedMessage False (Plaintext file) (Just signingKeypair)
 
-    client host port (handleRequest session (Plaintext payload))
+    client host port (handleRequest session signingKeypair file)
 
 ensureKeys :: DustPRNG -> IO (Keypair, Bool, DustPRNG)
 ensureKeys rand = do
@@ -84,7 +84,33 @@ client host port handleRequest = withSocketsDo $ do
 
         handleRequest sock
 
-handleRequest :: Session -> Plaintext -> Socket -> IO()
-handleRequest session payload sock = do
-    encodeWithProgress session payload sock progressBar
+handleRequest :: Session -> Keypair -> File -> Socket -> IO()
+handleRequest session keypair (File header chunks) sock = do
+    writeHeader session sock keypair header
+    writeChunks session sock keypair chunks
     hPutChar stderr '\n'
+
+writeHeader :: Session -> Socket -> Keypair -> FileHeader -> IO()
+writeHeader session sock keypair header = do
+    let contents = Plaintext $ DS.encode header
+    let payload = Plaintext $ makeEncodedMessage False contents (Just keypair)
+    encode session payload sock
+
+writeChunks :: Session -> Socket -> Keypair -> [FileData] -> IO()
+writeChunks session sock keypair [] = return ()
+writeChunks session sock keypair chunks = do
+    let payload = unchunk keypair chunks
+    encodeWithProgress session payload sock progressBar
+
+unchunk :: Keypair -> [FileData] -> Plaintext
+unchunk keypair chunks =
+    let contents = map ((signchunk keypair) . Plaintext . DS.encode) chunks
+        payload = foldl B.append B.empty contents
+    in Plaintext payload
+
+signchunk :: Keypair -> Plaintext -> B.ByteString
+signchunk keypair contents = makeEncodedMessage False contents (Just keypair)
+
+progressBar :: Int -> Int -> IO()
+progressBar mp p = do
+    putStrLn $ (show p) ++ "/" ++ (show mp)

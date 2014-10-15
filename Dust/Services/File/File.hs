@@ -3,8 +3,11 @@
 module Dust.Services.File.File
 (
     File(..),
+    FileHeader(..),
+    FileData(..),
     readEncodedFile,
-    writeEncodedFile
+    openFile,
+    writeFileData
 )
 where
 
@@ -13,25 +16,41 @@ import Data.Serialize
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as B
 import Data.List.Split
+import System.Directory
 
-data File = File String ByteString deriving (Generic, Show, Eq) -- name contents
+data File = File FileHeader [FileData] deriving (Generic, Show, Eq) -- name contents
 instance Serialize File
 
-readEncodedFile :: String -> IO ByteString
-readEncodedFile path = do
-    contents <- B.readFile path
-    let name = sanitize path
-    let file = File name contents
-    return $ encode file
+data FileHeader = FileHeader String Int deriving (Generic, Show, Eq) -- filename count
+instance Serialize FileHeader
 
-writeEncodedFile :: ByteString -> IO ()
-writeEncodedFile bs = do
-    let eitherFile = (decode bs) :: (Either String File)
-    case eitherFile of
-        Left error                 -> putStrLn $ "Error parsing File: " ++ error
-        Right (File path contents) -> do
-            let name = sanitize path
-            B.writeFile ("incoming/"++name) contents
+data FileData = FileData ByteString deriving (Generic, Show, Eq)
+instance Serialize FileData
+
+readEncodedFile :: String -> IO File
+readEncodedFile path = do
+    let name = sanitize path
+    contents <- B.readFile path
+    let chunks = splitData 1000 contents
+    let filedata = map FileData chunks
+    let header = FileHeader name $ length chunks
+    return $ File header filedata
+
+splitData :: Int -> ByteString -> [ByteString]
+splitData size bs =
+    if B.length bs < size
+        then [bs]
+        else (B.take size bs) : splitData size (B.drop size bs)
+
+openFile :: FileHeader -> IO ()
+openFile (FileHeader path _) = do
+    let name = sanitize path
+    removeFile $ "incoming/"++name
+
+writeFileData :: FileHeader -> FileData -> IO()
+writeFileData (FileHeader path _) (FileData contents) = do
+    let name = sanitize path
+    B.appendFile ("incoming/"++name) contents
 
 sanitize :: String -> String
 sanitize path = do
