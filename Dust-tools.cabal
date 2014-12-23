@@ -200,3 +200,10 @@ Executable shaper-import
     ghc-prim,
     directory,
     aeson
+
+Executable huffman
+  Main-is:           Dust/Model/huffman-export.hs
+  Build-Depends:
+    base >= 3 && < 5,
+    Dust,
+    containers
